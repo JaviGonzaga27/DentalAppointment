@@ -4,20 +4,14 @@ import {
     Box,
     CssBaseline,
     Drawer,
-    AppBar,
     Toolbar,
-    List,
-    Typography,
     Divider,
-    IconButton,
-    Button
+    IconButton
 } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import { styled } from '@mui/material/styles';
+import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
 import Sidebar from './Sidebar';
+import Navbar from './Navbar';
 
 const drawerWidth = 240;
 
@@ -40,22 +34,16 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
     }),
 );
 
-const AppBarStyled = styled(AppBar, { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
-        transition: theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        ...(open && {
-            width: `calc(100% - ${drawerWidth}px)`,
-            marginLeft: `${drawerWidth}px`,
-            transition: theme.transitions.create(['margin', 'width'], {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-        }),
-    }),
-);
+const theme = createTheme({
+    palette: {
+        primary: {
+            main: '#1976d2',
+        },
+        secondary: {
+            main: '#dc004e',
+        },
+    },
+});
 
 function Dashboard() {
     const [open, setOpen] = useState(false);
@@ -75,64 +63,37 @@ function Dashboard() {
     };
 
     return (
-        <Box sx={{ display: 'flex' }}>
-            <CssBaseline />
-            <AppBarStyled position="fixed" open={open}>
-                <Toolbar>
-                    <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={handleDrawerOpen}
-                        edge="start"
-                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
-                    >
-                        <MenuIcon />
-                    </IconButton>
-                    <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-                        GAP Dental
-                    </Typography>
-                    <IconButton color="inherit">
-                        <NotificationsIcon />
-                    </IconButton>
-                    <IconButton
-                        size="large"
-                        aria-label="account of current user"
-                        aria-controls="menu-appbar"
-                        aria-haspopup="true"
-                        color="inherit"
-                        onClick={() => navigate('/profile')}
-                    >
-                        <AccountCircle />
-                    </IconButton>
-                    <Button color="inherit" onClick={handleLogout}>Cerrar sesión</Button>
-                </Toolbar>
-            </AppBarStyled>
-            <Drawer
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
+        <ThemeProvider theme={theme}>
+            <Box sx={{ display: 'flex' }}>
+                <CssBaseline />
+                <Navbar open={open} handleDrawerOpen={handleDrawerOpen} handleLogout={handleLogout} />
+                <Drawer
+                    sx={{
                         width: drawerWidth,
-                        boxSizing: 'border-box',
-                    },
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
-            >
-                <Toolbar>
-                    <IconButton onClick={handleDrawerClose}>
-                        <ChevronLeftIcon />
-                    </IconButton>
-                </Toolbar>
-                <Divider />
-                <Sidebar />
-            </Drawer>
-            <Main open={open}>
-                <Toolbar /> {/* This empty Toolbar acts as a spacer */}
-                <Outlet /> {/* This is where the sub-routes will be rendered */}
-            </Main>
-        </Box>
+                        flexShrink: 0,
+                        '& .MuiDrawer-paper': {
+                            width: drawerWidth,
+                            boxSizing: 'border-box',
+                        },
+                    }}
+                    variant="persistent"
+                    anchor="left"
+                    open={open}
+                >
+                    <Toolbar>
+                        <IconButton onClick={handleDrawerClose}>
+                            <ChevronLeftIcon />
+                        </IconButton>
+                    </Toolbar>
+                    <Divider />
+                    <Sidebar />
+                </Drawer>
+                <Main open={open}>
+                    <Toolbar /> {/* This empty Toolbar acts as a spacer */}
+                    <Outlet /> {/* This is where the sub-routes will be rendered */}
+                </Main>
+            </Box>
+        </ThemeProvider>
     );
 }
 
