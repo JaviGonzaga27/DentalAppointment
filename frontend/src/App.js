@@ -7,6 +7,8 @@ import Dashboard from './components/Dashboard';
 import Patients from './components/Patients';
 import Appointments from './components/Appointments';
 import Calendar from './components/Calendar'; // Asegúrate de crear este componente
+import Users from './components/Users';
+import Doctors from './components/Doctors';
 
 const theme = createTheme();
 
@@ -22,6 +24,8 @@ function App() {
             <Route path="calendar" element={<Calendar />} />
             <Route path="patients" element={<Patients />} />
             <Route path="appointments" element={<Appointments />} />
+            <Route path="users" element={<Users />} />
+            <Route path="doctors" element={<Doctors />} />
           </Route>
         </Routes>
       </Router>

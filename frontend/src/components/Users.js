@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField } from '@mui/material';
 
-function Patients() {
-    const [patients, setPatients] = useState([]);
+function Users() {
+    const [users, setUsers] = useState([]);
     const [open, setOpen] = useState(false);
-    const [newPatient, setNewPatient] = useState({
+    const [openR, setOpenRol] = useState(false);
+    const [newUser, setNewUser] = useState({
         user: {
             first_name: '',
             last_name: '',
@@ -27,15 +28,15 @@ function Patients() {
         if (token) {
             axios.defaults.headers.common['Authorization'] = `Token ${token}`;
         }
-        fetchPatients();
+        fetchUsers();
     }, []);
 
-    const fetchPatients = async () => {
+    const fetchUsers = async () => {
         try {
             const response = await axios.get('http://localhost:8000/api/patients/');
-            setPatients(response.data);
+            setUsers(response.data);
         } catch (error) {
-            console.error('Error fetching patients', error);
+            console.error('Error fetching users', error);
         }
     };
 
@@ -45,7 +46,32 @@ function Patients() {
 
     const handleClose = () => {
         setOpen(false);
-        setNewPatient({
+        setNewUser({
+            user: {
+                first_name: '',
+                last_name: '',
+                email: '',
+            },
+            phone: '',
+            password: ''
+        });
+        setErrors({
+            first_name: '',
+            last_name: '',
+            email: '',
+            phone: '',
+            password: ''
+        });
+    };
+
+
+    const handleOpenRol = () => {
+        setOpenRol(true);
+    };
+
+    const handleCloseRol = () => {
+        setOpenRol(false);
+        setNewUser({
             user: {
                 first_name: '',
                 last_name: '',
@@ -96,12 +122,12 @@ function Patients() {
     const handleInputChange = (event) => {
         const { name, value } = event.target;
         if (name === 'phone' || name === 'password') {
-            setNewPatient({ ...newPatient, [name]: value });
+            setNewUser({ ...newUser, [name]: value });
         } else {
-            setNewPatient({
-                ...newPatient,
+            setNewUser({
+                ...newUser,
                 user: {
-                    ...newPatient.user,
+                    ...newUser.user,
                     [name]: value
                 }
             });
@@ -111,24 +137,24 @@ function Patients() {
 
     const isFormValid = () => {
         return Object.values(errors).every(x => x === '') && 
-               newPatient.user.first_name !== '' &&
-               newPatient.user.last_name !== '' &&
-               newPatient.user.email !== '' &&
-               newPatient.phone !== '' &&
-               newPatient.password !== '';
+               newUser.user.first_name !== '' &&
+               newUser.user.last_name !== '' &&
+               newUser.user.email !== '' &&
+               newUser.phone !== '' &&
+               newUser.password !== '';
     };
 
     const handleSubmit = async () => {
         if (isFormValid()) {
-            console.log('Datos a enviar:', newPatient);  // Añade esta línea
+            console.log('Datos a enviar:', newUser);  // Añade esta línea
             try {
-                const response = await axios.post('http://localhost:8000/api/patients/', newPatient);
+                const response = await axios.post('http://localhost:8000/api/users/', newUser);
                 if (response.status === 201) {
                     handleClose();
-                    fetchPatients();
+                    fetchUsers();
                 }
             } catch (error) {
-                console.error('Error creating patient', error);
+                console.error('Error creating user', error);
                 console.error('Error response:', error.response);  // Añade esta línea
                 // Aquí podrías manejar los errores, por ejemplo mostrando un mensaje al usuario
             }
@@ -138,36 +164,52 @@ function Patients() {
     return (
         <Container>
             <Typography variant="h4" gutterBottom>
-                Pacientes
+                Usuarios
             </Typography>
-            <Button variant="contained" color="primary" onClick={handleOpen} style={{ marginBottom: '20px' }}>
-                Agregar Paciente
+     <Button variant="contained" color="primary" onClick={handleOpen}>
+                Agregar Usuario
             </Button>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow>
                             <TableCell>Nombre</TableCell>
-                            <TableCell>Apellido</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>Teléfono</TableCell>
+                            <TableCell>Rol</TableCell>
+                            <TableCell>Acciones</TableCell>
+                            
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {patients.map((patient) => (
-                            <TableRow key={patient.id}>
-                                <TableCell>{patient.user.first_name}</TableCell>
-                                <TableCell>{patient.user.last_name}</TableCell>
-                                <TableCell>{patient.user.email}</TableCell>
-                                <TableCell>{patient.phone}</TableCell>
+                      
+                            <TableRow >
+                                <TableCell>Javier Gonzaga</TableCell>
+                                <TableCell>Administrador</TableCell>
+                                <TableCell>
+                                    <td class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignRight MuiTableCell-sizeMedium css-177gid-MuiTableCell-root">
+                                
+                                    <button onClick={handleOpenRol} class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeMedium css-1kuq5xv-MuiButtonBase-root-MuiIconButton-root" >
+                                    <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"  >
+                                    </svg>
+                                        Asignar rol
+                                    </button>
+                                    <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeMedium css-1kuq5xv-MuiButtonBase-root-MuiIconButton-root" tabindex="0" type="button" aria-label="edit">
+                                        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="EditIcon"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75z"></path>
+                                        </svg><span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"></span>
+                                        </button>
+                                    <button class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorError MuiIconButton-sizeMedium css-1jo1f9u-MuiButtonBase-root-MuiIconButton-root" tabindex="0" type="button" aria-label="delete">
+                                        <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root" focusable="false" aria-hidden="true" viewBox="0 0 24 24" data-testid="DeleteIcon"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"></path>
+                                        </svg><span class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"></span>
+                                        </button></td>
+                                </TableCell>
+                              
                             </TableRow>
-                        ))}
+                        
                     </TableBody>
                 </Table>
             </TableContainer>
 
             <Dialog open={open} onClose={handleClose}>
-                <DialogTitle>Agregar Nuevo Paciente</DialogTitle>
+                <DialogTitle>Agregar Nuevo Usuario</DialogTitle>
                 <DialogContent>
                     <TextField
                         autoFocus
@@ -176,7 +218,7 @@ function Patients() {
                         label="Nombre"
                         type="text"
                         fullWidth
-                        value={newPatient.user.first_name}
+                        value={newUser.user.first_name}
                         onChange={handleInputChange}
                         error={!!errors.first_name}
                         helperText={errors.first_name}
@@ -187,21 +229,21 @@ function Patients() {
                         label="Apellido"
                         type="text"
                         fullWidth
-                        value={newPatient.user.last_name}
+                        value={newUser.user.last_name}
                         onChange={handleInputChange}
                         error={!!errors.last_name}
                         helperText={errors.last_name}
                     />
                     <TextField
                         margin="dense"
-                        name="email"
-                        label="Email"
-                        type="email"
+                        name="rol"
+                        label="Rol"
+                        type="text"
                         fullWidth
-                        value={newPatient.user.email}
+                        value={newUser.user.rol}
                         onChange={handleInputChange}
-                        error={!!errors.email}
-                        helperText={errors.email}
+                        error={!!errors.rol}
+                        helperText={errors.rol}
                     />
                     <TextField
                         margin="dense"
@@ -209,7 +251,7 @@ function Patients() {
                         label="Teléfono"
                         type="text"
                         fullWidth
-                        value={newPatient.phone}
+                        value={newUser.phone}
                         onChange={handleInputChange}
                         error={!!errors.phone}
                         helperText={errors.phone}
@@ -220,7 +262,7 @@ function Patients() {
                         label="Contraseña"
                         type="password"
                         fullWidth
-                        value={newPatient.password}
+                        value={newUser.password}
                         onChange={handleInputChange}
                         error={!!errors.password}
                         helperText={errors.password}
@@ -235,8 +277,31 @@ function Patients() {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+
+
+
+
+            <Dialog open={openR} onClose={handleCloseRol}>
+                <DialogTitle>Rol</DialogTitle>
+                <DialogContent>
+                   Reasignar Rol: 
+                <select class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary MuiIconButton-sizeMedium css-1kuq5xv-MuiButtonBase-root-MuiIconButton-root" tabindex="0" type="button" aria-label="edit">
+                     <option value="administrador">Administrador</option>
+                     <option value="doctor">Doctor</option>
+                     <option value="paciente">Paciente</option>
+                </select>
+                    
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseRol} color="primary">
+                        Guardar
+                    </Button>
+  
+                </DialogActions>
+            </Dialog>
         </Container>
     );
 }
 
-export default Patients;
+export default Users;

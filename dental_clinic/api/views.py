@@ -17,6 +17,16 @@ class PatientViewSet(viewsets.ModelViewSet):
     queryset = Patient.objects.all()
     serializer_class = PatientSerializer
 
+    def create(self, request, *args, **kwargs):
+        print('Datos recibidos:', request.data)
+        serializer = self.get_serializer(data=request.data)
+        if not serializer.is_valid():
+            print('Errores de validación:', serializer.errors)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
 class AppointmentViewSet(viewsets.ModelViewSet):
     queryset = Appointment.objects.all()
     serializer_class = AppointmentSerializer
